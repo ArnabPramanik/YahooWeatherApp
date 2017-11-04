@@ -1,4 +1,4 @@
-package model;
+package com.arnab.android.myyahooweather.model;
 
 /**
  * Created by arnab on 10/26/17.
@@ -10,6 +10,15 @@ public class DayForecast {
     private String high;
     private String low;
     private String text;
+    private String day;
+    public String getDay() {
+        return day;
+    }
+
+    public void setDay(String day) {
+        this.day = day;
+    }
+
 
 
     public String getCode() {

@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -19,25 +17,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.arnab.android.myyahooweather.Data.JsonParser;
 import com.arnab.android.myyahooweather.Data.WeatherContract;
-import com.arnab.android.myyahooweather.Data.WeatherHttpClient;
-import model.DayForecast;
-import model.Weather;
 
-import com.arnab.android.myyahooweather.ForecastAdapter.ForecastAdapterOnClickHandler;
 import com.arnab.android.myyahooweather.Util.FakeUtils;
-
-import java.net.URL;
-
-import static com.arnab.android.myyahooweather.R.id.weatherView;
+import com.arnab.android.myyahooweather.sync.WeatherSyncUtils;
 
 public class MainActivity extends AppCompatActivity implements
 //      COMPLETED (15) Remove the implements declaration for SharedPreferences change listener
@@ -97,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-        FakeUtils.insertFakeData(this);
+        WeatherSyncUtils.startImmediateSync(this);
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
