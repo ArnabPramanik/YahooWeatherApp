@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-        WeatherSyncUtils.startImmediateSync(this);
+        WeatherSyncUtils.initialize(this);
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
