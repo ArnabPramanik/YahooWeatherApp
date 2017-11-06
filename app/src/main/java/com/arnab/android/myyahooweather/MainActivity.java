@@ -329,6 +329,7 @@ public class MainActivity extends AppCompatActivity implements
         /* Use the inflater's inflate method to inflate our menu layout to this menu */
         inflater.inflate(R.menu.forecast, menu);
         /* Return true so that the menu is displayed in the Toolbar */
+        inflater.inflate(R.menu.settings, menu);
         return true;
     }
 

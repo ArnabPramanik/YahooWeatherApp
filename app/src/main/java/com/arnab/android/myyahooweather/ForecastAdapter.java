@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.arnab.android.myyahooweather.Util.Utils;
+
 /**
  * Created by arnab on 10/27/17.
  */
@@ -103,9 +105,12 @@ public interface ForecastAdapterOnClickHandler {
         String high = mCursor.getString(MainActivity.INDEX_WEATHER_HIGH);
         /* Read low temperature from the cursor (in degrees celsius) */
         String low = mCursor.getString(MainActivity.INDEX_WEATHER_LOW);
+        double doubleLow = Double.parseDouble(low);
+        double doubleHigh = Double.parseDouble(high);
+        String highAndLowTemperature =
+                Utils.formatHighLows(mContext, doubleHigh, doubleLow);
 
-
-        String weatherSummary = date + " - " + high + " - " + low;
+        String weatherSummary = date + " - " + highAndLowTemperature;
 
 //      COMPLETED (8) Display the summary that you created above
         forecastAdapterViewHolder.weatherSummary.setText(weatherSummary);
