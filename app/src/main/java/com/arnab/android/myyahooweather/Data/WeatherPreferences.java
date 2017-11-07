@@ -28,4 +28,13 @@ public class WeatherPreferences {
 
         return userPrefersImperial;
     }
+
+    public static String getPreferredWeatherLocation(Context context) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        String keyForLocation = context.getString(R.string.pref_location_key);
+        String defaultLocation = context.getString(R.string.pref_location_default);
+
+        return sp.getString(keyForLocation, defaultLocation);
+    }
 }

@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.arnab.android.myyahooweather.Data.WeatherPreferences;
 import com.arnab.android.myyahooweather.model.DayForecast;
 
 /**
@@ -21,7 +22,7 @@ import com.arnab.android.myyahooweather.model.DayForecast;
 public class WeatherSyncTask {
     synchronized public static void syncWeather(Context context){
         try{
-            String data =  new WeatherHttpClient().getWeatherData("Kolkata,India");
+            String data =  new WeatherHttpClient().getWeatherData(WeatherPreferences.getPreferredWeatherLocation(context));
             JSONArray weatherJA = JsonParser.getWeather(data);
             DayForecast[] dayForecasts = new DayForecast[weatherJA.length()];
             for(int count = 0; count < weatherJA.length(); count++){
