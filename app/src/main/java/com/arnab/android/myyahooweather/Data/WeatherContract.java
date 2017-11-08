@@ -31,6 +31,11 @@ public class WeatherContract {
                     .appendPath(String.valueOf(date))
                     .build();
         }
+        public static Uri buildWeatherUriWithDateStr(String date) {
+            return CONTENT_URI.buildUpon()
+                    .appendPath(String.valueOf(date))
+                    .build();
+        }
 
     }
 }

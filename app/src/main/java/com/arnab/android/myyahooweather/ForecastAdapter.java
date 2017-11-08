@@ -36,7 +36,7 @@ final private ForecastAdapterOnClickHandler mClickHandler;
  * The interface that receives onClick messages.
  */
 public interface ForecastAdapterOnClickHandler {
-    void onClick(String weatherForDay);
+    void onClick(String date);
 }
 
     //  COMPLETED (2) Declare a private Cursor field called mCursor
@@ -170,8 +170,12 @@ class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.
     @Override
     public void onClick(View v) {
         //  COMPLETED (13) Instead of passing the String from the data array, use the weatherSummary text!
-        String weatherForDay = weatherSummary.getText().toString();
-        mClickHandler.onClick(weatherForDay);
+        int adapterPosition = getAdapterPosition();
+//          COMPLETED (37) Instead of passing the String for the clicked item, pass the date from the cursor
+        mCursor.moveToPosition(adapterPosition);
+        String dateStr = mCursor.getString(MainActivity.INDEX_WEATHER_DATE);
+        Log.v("DATE",dateStr);
+        mClickHandler.onClick(dateStr);
     }
 }
 }

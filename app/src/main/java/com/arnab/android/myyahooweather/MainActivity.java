@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements
             WeatherContract.WeatherEntry.DATE,
             WeatherContract.WeatherEntry.HIGH,
             WeatherContract.WeatherEntry.LOW,
-            WeatherContract.WeatherEntry.CODE
+            WeatherContract.WeatherEntry.CODE,
+            WeatherContract.WeatherEntry.TEXT
     };
 
     //  COMPLETED (17) Create constant int values representing each column name's position above
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final int INDEX_WEATHER_HIGH = 1;
     public static final int INDEX_WEATHER_LOW = 2;
     public static final int INDEX_WEATHER_CODE = 3;
+    public static final int INDEX_WEATHER_TEXT = 4;
 
 //  COMPLETED (37) Remove the error TextView
 
@@ -200,8 +202,7 @@ public class MainActivity extends AppCompatActivity implements
                 /* URI for all rows of weather data in our weather table */
                 Uri forecastQueryUri = WeatherContract.WeatherEntry.CONTENT_URI;
                 /* Sort order: Ascending by date */
-                String sortOrder = WeatherContract.WeatherEntry.DATE + " ASC";
-                Log.v("DATA IS NULL","A");
+
                 /*
                  * A SELECTION in SQL declares which rows you'd like to return. In our case, we
                  * want all weather data from today onwards that is stored in our weather table.
@@ -269,15 +270,15 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * This method is for responding to clicks from our list.
      *
-     * @param weatherForDay String describing weather details for a particular day
+     *
      */
     @Override
-    public void onClick(String weatherForDay) {
-        Context context = this;
-        Class destinationClass = DetailActivity.class;
-        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, weatherForDay);
-        startActivity(intentToStartDetailActivity);
+    public void onClick(String date) {
+        Intent weatherDetailIntent = new Intent(MainActivity.this, DetailActivity.class);
+//      COMPLETED (39) Refactor onClick to pass the URI for the clicked date with the Intent
+        Uri uriForDateClicked = WeatherContract.WeatherEntry.buildWeatherUriWithDateStr(date);
+        weatherDetailIntent.setData(uriForDateClicked);
+        startActivity(weatherDetailIntent);
     }
 
     /**

@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by arnab on 10/31/17.
@@ -22,7 +23,7 @@ public class WeatherProvider extends ContentProvider {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = WeatherContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, WeatherContract.PATH_WEATHER, CODE_WEATHER);
-        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/#", CODE_WEATHER_WITH_DATE);
+        matcher.addURI(authority, WeatherContract.PATH_WEATHER + "/*", CODE_WEATHER_WITH_DATE);
         return matcher;
     }
 
@@ -99,7 +100,7 @@ public class WeatherProvider extends ContentProvider {
                  * because this method signature accepts a string array.
                  */
                // String[] selectionArguments = new String[]{normalizedUtcDateString};
-
+                Log.v("IN THIS MEOTHID","INT THIS METHOD");
                 cursor = mOpenHelper.getReadableDatabase().query(
                         /* Table we are going to query */
                         WeatherContract.WeatherEntry.TABLE_NAME,
@@ -119,7 +120,7 @@ public class WeatherProvider extends ContentProvider {
                          * within the selectionArguments array will be inserted into the
                          * selection statement by SQLite under the hood.
                          */
-                        WeatherContract.WeatherEntry.DATE + " = ? ",
+                        WeatherContract.WeatherEntry.DATE,
                         selectionArgs,
                         null,
                         null,
