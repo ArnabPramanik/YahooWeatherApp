@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.arnab.android.myyahooweather.Util.Utils;
@@ -17,7 +18,9 @@ import com.arnab.android.myyahooweather.Util.Utils;
  */
 
 class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapterViewHolder> {
-
+    private static final int VIEW_TYPE_TODAY = 0;
+    private static final int VIEW_TYPE_FUTURE_DAY = 1;
+    private boolean mUseTodayLayout;
 //  COMPLETED (14) Remove the mWeatherData declaration
 
 //  COMPLETED (1) Declare a private final Context field called mContext
@@ -53,6 +56,7 @@ public interface ForecastAdapterOnClickHandler {
     public ForecastAdapter(@NonNull Context context, ForecastAdapterOnClickHandler clickHandler) {
         mContext = context;
         mClickHandler = clickHandler;
+        mUseTodayLayout = mContext.getResources().getBoolean(R.bool.use_today_layout);
     }
 
     /**
@@ -69,10 +73,28 @@ public interface ForecastAdapterOnClickHandler {
     @Override
     public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
 
-        View view = LayoutInflater
-                .from(mContext)
-                .inflate(R.layout.recycle_list_item, viewGroup, false);
+        int layoutId;
 
+        switch (viewType) {
+
+//          COMPLETED (12) If the view type of the layout is today, use today layout
+            case VIEW_TYPE_TODAY: {
+                layoutId = R.layout.list_item_forecast_today;
+                break;
+            }
+
+//          COMPLETED (13) If the view type of the layout is future day, use future day layout
+            case VIEW_TYPE_FUTURE_DAY: {
+                layoutId = R.layout.recycle_list_item;
+                break;
+            }
+
+//          COMPLETED (14) Otherwise, throw an IllegalArgumentException
+            default:
+                throw new IllegalArgumentException("Invalid view type, value of " + viewType);
+        }
+
+        View view = LayoutInflater.from(mContext).inflate(layoutId, viewGroup, false);
         view.setFocusable(true);
 
         return new ForecastAdapterViewHolder(view);
@@ -96,6 +118,10 @@ public interface ForecastAdapterOnClickHandler {
         /*******************
          * Weather Summary *
          *******************/
+
+
+
+
 //      COMPLETED (7) Generate a weather summary with the date, description, high and low
         /* Read date from the cursor */
         String date = mCursor.getString(MainActivity.INDEX_WEATHER_DATE);
@@ -107,13 +133,47 @@ public interface ForecastAdapterOnClickHandler {
         String low = mCursor.getString(MainActivity.INDEX_WEATHER_LOW);
         double doubleLow = Double.parseDouble(low);
         double doubleHigh = Double.parseDouble(high);
-        String highAndLowTemperature =
-                Utils.formatHighLows(mContext, doubleHigh, doubleLow);
+        String high2 = Utils.formatTemperature(mContext,doubleHigh);
+        String low2 = Utils.formatTemperature(mContext,doubleLow);
+        String description = mCursor.getString(MainActivity.INDEX_WEATHER_TEXT);
+        int codeInt = Integer.parseInt(code);
+        if(codeInt >= 0 && codeInt <= 4 || codeInt >= 37 && codeInt <= 39 || codeInt == 45 || codeInt == 47){
+            //STORMS
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_storm);
+        }
+        else if (codeInt >= 5 && codeInt <= 7 || codeInt >= 13 && codeInt <= 18 || codeInt >= 41 && codeInt <= 43 || codeInt == 46){
+            //SNOW
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_snow);
+        }
+        else if(codeInt >= 8 && codeInt <=12 || codeInt == 35){
+            //RAIN
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_rain);
+        }
+        else if (codeInt >= 19 && codeInt <= 22){
+            //FOG
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_fog);
+        }
+        else if (codeInt >= 26 && codeInt <= 30 || codeInt == 44){
+            //CLOUDY
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_clouds);
+        }
+        else if(codeInt >= 31 && codeInt <= 34 || codeInt == 36){
+            //CLEAR
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_clear);
+        }
+        else if(codeInt >= 23 && codeInt <= 25){
+            //Light clouds
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_light_clouds);
+        }else{
+            forecastAdapterViewHolder.iconView.setImageResource(R.drawable.art_light_rain);
+        }
+//      COMPLETED (8) Displa/ the summary that you created above
+        forecastAdapterViewHolder.dateView.setText(date);
+        forecastAdapterViewHolder.descriptionView.setText(description);
+        forecastAdapterViewHolder.lowTempView.setText(low2);
+        forecastAdapterViewHolder.highTempView.setText(high2);
 
-        String weatherSummary = date + " - " + highAndLowTemperature;
 
-//      COMPLETED (8) Display the summary that you created above
-        forecastAdapterViewHolder.weatherSummary.setText(weatherSummary);
     }
     /**
      * This method simply returns the number of items to display. It is used behind the scenes
@@ -128,7 +188,16 @@ public interface ForecastAdapterOnClickHandler {
         if (null == mCursor) {return 0;}
         return mCursor.getCount();
     }
-
+    @Override
+    public int getItemViewType(int position) {
+//      COMPLETED (10) Within getItemViewtype, if mUseTodayLayout is true and position is 0, return the ID for today viewType
+        if (mUseTodayLayout && position == 0) {
+            return VIEW_TYPE_TODAY;
+//      COMPLETED (11) Otherwise, return the ID for future day viewType
+        } else {
+            return VIEW_TYPE_FUTURE_DAY;
+        }
+    }
 //  COMPLETED (11) Create a new method that allows you to swap Cursors.
     /**
      * Swaps the cursor used by the ForecastAdapter for its weather data. This method is called by
@@ -150,12 +219,21 @@ public interface ForecastAdapterOnClickHandler {
  * OnClickListener, since it has access to the adapter and the views.
  */
 class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-    final TextView weatherSummary;
+    final TextView dateView;
+    final TextView descriptionView;
+    final TextView highTempView;
+    final TextView lowTempView;
+    final ImageView iconView;
+
 
     ForecastAdapterViewHolder(View view) {
         super(view);
 
-        weatherSummary = (TextView) view.findViewById(R.id.weatherView);
+        iconView = (ImageView) view.findViewById(R.id.weather_icon);
+        dateView = (TextView) view.findViewById(R.id.date);
+        descriptionView = (TextView) view.findViewById(R.id.weather_description);
+        highTempView = (TextView) view.findViewById(R.id.high_temperature);
+        lowTempView = (TextView) view.findViewById(R.id.low_temperature);
 
         view.setOnClickListener(this);
     }
