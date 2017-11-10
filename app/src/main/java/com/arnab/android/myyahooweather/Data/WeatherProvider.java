@@ -120,8 +120,8 @@ public class WeatherProvider extends ContentProvider {
                          * within the selectionArguments array will be inserted into the
                          * selection statement by SQLite under the hood.
                          */
-                        WeatherContract.WeatherEntry.DATE,
-                        selectionArgs,
+                        WeatherContract.WeatherEntry.DATE + " = ? ",
+                        new String[]{uri.getLastPathSegment()},
                         null,
                         null,
                         sortOrder);

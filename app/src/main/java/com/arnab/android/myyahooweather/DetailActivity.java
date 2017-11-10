@@ -2,6 +2,7 @@ package com.arnab.android.myyahooweather;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
@@ -16,6 +17,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.arnab.android.myyahooweather.Data.WeatherContract;
+import com.arnab.android.myyahooweather.databinding.ActivityDetailBinding;
+
 
 public class DetailActivity extends AppCompatActivity implements
 //      COMPLETED (21) Implement LoaderManager.LoaderCallbacks<Cursor>
@@ -73,22 +76,13 @@ public class DetailActivity extends AppCompatActivity implements
 //  COMPLETED (10) Remove the mWeatherDisplay TextView declaration
 
     //  COMPLETED (11) Declare TextViews for the date, description, high, low, humidity, wind, and pressure
-    private TextView mDateView;
-    private TextView mDescriptionView;
-    private TextView mHighTemperatureView;
-    private TextView mLowTemperatureView;
 
+    private ActivityDetailBinding mDetailBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-//      COMPLETED (12) Remove mWeatherDisplay TextView
-//      COMPLETED (13) Find each of the TextViews by ID
-        mDateView = (TextView) findViewById(R.id.date);
-        mDescriptionView = (TextView) findViewById(R.id.weather_description);
-        mHighTemperatureView = (TextView) findViewById(R.id.high_temperature);
-        mLowTemperatureView = (TextView) findViewById(R.id.low_temperature);
+        mDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_detail);
 
 //      COMPLETED (14) Remove the code that checks for extra text
 
@@ -249,21 +243,51 @@ public class DetailActivity extends AppCompatActivity implements
          * the date representation for the local date in local time.
          * SunshineDateUtils#getFriendlyDateString takes care of this for us.
          */
-        String dateText = data.getString(INDEX_WEATHER_DATE);;
-        Log.v("Date TEXT",dateText);
-        mDateView.setText(dateText);
+        String dateText = data.getString(INDEX_WEATHER_DATE);
+        Log.v("DATE TEXT",dateText);
+
 
 //      COMPLETED (27) Display the weather description (using SunshineWeatherUtils)
         /***********************
          * Weather Description *
          ***********************/
         /* Read weather condition ID from the cursor (ID provided by Open Weather Map) */
-        String weatherId = data.getString(INDEX_WEATHER_CODE);
+        String code = data.getString(INDEX_WEATHER_CODE);
         /* Use the weatherId to obtain the proper description */
         String description = data.getString(INDEX_WEATHER_TEXT);
 
         /* Set the text */
-        mDescriptionView.setText(description);
+        int codeInt = Integer.parseInt(code);
+        if(codeInt >= 0 && codeInt <= 4 || codeInt >= 37 && codeInt <= 39 || codeInt == 45 || codeInt == 47){
+            //STORMS
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_storm);
+        }
+        else if (codeInt >= 5 && codeInt <= 7 || codeInt >= 13 && codeInt <= 18 || codeInt >= 41 && codeInt <= 43 || codeInt == 46){
+            //SNOW
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_snow);
+        }
+        else if(codeInt >= 8 && codeInt <=12 || codeInt == 35){
+            //RAIN
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_rain);
+        }
+        else if (codeInt >= 19 && codeInt <= 22){
+            //FOG
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_fog);
+        }
+        else if (codeInt >= 26 && codeInt <= 30 || codeInt == 44){
+                 //CLOUDY
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_clouds);
+        }
+        else if(codeInt >= 31 && codeInt <= 34 || codeInt == 36){
+            //CLEAR
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_clear);
+        }
+        else if(codeInt >= 23 && codeInt <= 25){
+            //Light clouds
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_light_clouds);
+        }else{
+            mDetailBinding.primaryInfo.weatherIcon.setImageResource(R.drawable.art_storm);
+        }
 
 //      COMPLETED (28) Display the high temperature
         /**************************
@@ -279,7 +303,7 @@ public class DetailActivity extends AppCompatActivity implements
         String highString = data.getString(INDEX_WEATHER_MAX_TEMP);
 
         /* Set the text */
-        mHighTemperatureView.setText(highString);
+
 
 //      COMPLETED (29) Display the low temperature
         /*************************
@@ -295,10 +319,12 @@ public class DetailActivity extends AppCompatActivity implements
         String lowString = data.getString(INDEX_WEATHER_MIN_TEMP);
 
         /* Set the text */
-        mLowTemperatureView.setText(lowString);
 
+        mDetailBinding.primaryInfo.date.setText(dateText);
 
-
+        mDetailBinding.primaryInfo.weatherDescription.setText(description);
+        mDetailBinding.primaryInfo.lowTemperature.setText(lowString);
+        mDetailBinding.primaryInfo.highTemperature.setText(highString);
         mForecastSummary = String.format("%s - %s - %s/%s",
                 dateText, description, highString, lowString);
     }
